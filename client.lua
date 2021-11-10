@@ -7,9 +7,9 @@ Citizen.CreateThread(function()
 	end
 end)
 
-local Panier = {}
-local pTotal = 0
-local qty = 0
+local cart = {}
+local priceTotal = 0
+local qtyTotal = 0
 
 LTD = function()
 
@@ -22,27 +22,27 @@ LTD = function()
 
         RageUI.IsVisible(main, function()
                         
-            RageUI.Separator("Panier : ~o~"..qty.." ~s~/ ~b~"..ltd.itemMax.."")
-            RageUI.Separator("Total : ~g~" ..pTotal.. "$~s~")
+            RageUI.Separator("Panier : ~o~"..qtyTotal.." ~s~/ ~b~"..ltd.itemMax.."")
+            RageUI.Separator("Total : ~g~" ..priceTotal.. "$~s~")
 
-            if qty > 0 then
-                for k, v in pairs(Panier) do
+            if qtyTotal > 0 then
+                for k, v in pairs(cart) do
                     RageUI.Button(v.label, ltd.description, {RightLabel = "~y~"..v.prix.."$"}, true, { 
                         onSelected = function()
-                            table.remove(Panier, k)
-                            pTotal = pTotal - v.prix
-                            qty = qty - v.poid
+                            table.remove(cart, k)
+                            priceTotal = priceTotal - v.prix
+                            qtyTotal = qtyTotal - v.poid
                             rUtils.ImportantNotif("<C> - 1 "..v.label.."</C>")
                         end 
                     })
                 end
                 RageUI.Button("~g~Confirmer le panier", nil, {RightLabel = "→→"}, true, { 
                     onSelected = function()
-                        TriggerServerEvent("totalBuy", Panier, pTotal)
-                        for k, _ in pairs (Panier) do
-                            Panier[k] = nil
-                            pTotal = 0
-                            qty = 0
+                        TriggerServerEvent("totalBuy", cart, priceTotal)
+                        for k, _ in pairs (cart) do
+                            cart[k] = nil
+                            priceTotal = 0
+                            qtyTotal = 0
                         end
                     end 
                 })
@@ -89,13 +89,13 @@ Citizen.CreateThread(function()
                     if dist <= 1.0 then 
                         ESX.ShowHelpNotification(v.message)
                         if IsControlJustPressed(1, 38) then
-                            if qty >= ltd.itemMax then
+                            if qtyTotal >= ltd.itemMax then
                                 rUtils.ImportantNotif("<C>~o~Panier au max</C>")
                             else
                                 rUtils.ImportantNotif("<C>"..v.notif.."</C>", "info")
-                                table.insert(Panier, {label = v.label,item = v.item, prix = v.prix, poid = v.poid})
-                                pTotal = pTotal + v.prix
-                                qty = qty + v.poid
+                                table.insert(cart, {label = v.label,item = v.item, prix = v.prix, poid = v.poid})
+                                priceTotal = priceTotal + v.prix
+                                qtyTotal = qtyTotal + v.poid
                                 rgba = {255,0,0}
                             end
                         end
